@@ -1,0 +1,11 @@
+__pycache__/
+.vscode/
+.streamlit/
+env/
+*.csv
+*.db
+*.sqlite
+*.pyc
+*.pyo
+Thumbs.db
+.DS_Store
