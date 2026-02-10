@@ -1,11 +1,10 @@
-
-## FitPulse: Health Anomaly Detection
+# FitPulse: Health Anomaly Detection
 FitPulse is a health analytics platform that utilizes advanced anomaly detection techniques to analyze fitness watch data, enabling users and healthcare providers to proactively monitor health metrics and identify early warning signs of irregular heart rate, sleep disturbances, and abnormal activity levels.
 
-### Project Statement
+## Project Statement
 With the surge in wearable fitness devices, vast amounts of health-related time-series data are generated daily. FitPulse leverages advanced anomaly detection techniques to intelligently analyze this data, flagging unusual health patterns and supporting preventive healthcare and personalized wellness insights.
 
-### Features
+## Features
 - Upload fitness watch data (CSV format)
 - Automatic preprocessing and normalization
 - Time-series feature extraction (TSFresh)
@@ -14,17 +13,17 @@ With the surge in wearable fitness devices, vast amounts of health-related time-
 - Interactive Streamlit dashboard for visualizing trends and anomalies
 - Downloadable reports for users and healthcare professionals
 
-### Workflow
+## Workflow
 1. **Upload Data**: Import health metrics from fitness trackers
 2. **Preprocessing**: Clean, normalize, and resample data
 3. **Feature Extraction & Modeling**: Extract features, model trends, cluster patterns
 4. **Anomaly Detection**: Flag unusual values using thresholds and models
 5. **Visualization & Reporting**: Explore results in dashboard, export reports
 
-### Usage
+## Usage
 1. Clone the repository:
 	```
-	git clone https://github.com/sheethalkaran/FitPulse-health-anomaly-detection.git
+	git clone https://github.com/sheethalkaran/fitpulse-health-anomaly-detection.git
 	cd FitPulse-health-anomaly-detection
 	```
 2. Install dependencies:
@@ -37,5 +36,39 @@ With the surge in wearable fitness devices, vast amounts of health-related time-
 	```
 4. Upload your fitness watch CSV file and explore the dashboard.
 
----
+### Dataset
+The dataset provided in the `data/` folder is sample fitness watch data used for demonstration purposes.
+
+## Team Contributions
+This project was developed as a collaborative team effort for the Infosys Springboard Internship.
+
+- Vinotha M  
+  Module 1: Data Collection and Preprocessing
+
+- Prajwal Venkatesh Sortur  
+  Module 2: Feature Extraction and Modeling
+
+- Sheethal Karan  
+  Module 3: Anomaly Detection and Visualization
+
+- Chinmoy Saikia  
+  Module 4: Dashboard Development and Insights
+
+- Mahek Sultana  
+  Project support and presentation assistance
+
+
+
+## Technologies Used
+- Python
+- Streamlit
+- Pandas, NumPy
+- Scikit-learn
+- Prophet
+- TSFresh
+- Plotly
+
+
+## Deployment
+The app is live at: [https://fitpulse-health-anomaly-detection.streamlit.app](https://fitpulse-health-anomaly-detection.streamlit.app)
 
