@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-def preprocess_data(df_raw: pd.DataFrame, resample_rule: str = "1H") -> pd.DataFrame:
+def preprocess_data(df_raw: pd.DataFrame, resample_rule: str = "1h") -> pd.DataFrame:
     """
     Module 1 Preprocessing:
     - Detect timestamp column

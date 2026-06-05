@@ -45,7 +45,7 @@ def parse_blood_pressure(bp_str):
     return 120, 80
 
 
-def run_flask_pipeline(df_raw, resample_rule="1H"):
+def run_flask_pipeline(df_raw, resample_rule="1h"):
     """
     Executes the exact preprocessing, modeling, and anomaly detection steps
     sequentially, without using Streamlit decorators.
