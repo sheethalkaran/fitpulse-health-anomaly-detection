@@ -10,7 +10,7 @@ With the surge in wearable fitness devices, vast amounts of health-related time-
 - Time-series feature extraction (TSFresh)
 - Trend modeling and anomaly detection (Prophet, clustering)
 - Rule-based and model-based anomaly flagging
-- Interactive Streamlit dashboard for visualizing trends and anomalies
+- Interactive web dashboard for visualizing trends and anomalies
 - Downloadable reports for users and healthcare professionals
 
 ## Workflow
@@ -30,9 +30,9 @@ With the surge in wearable fitness devices, vast amounts of health-related time-
 	```
 	pip install -r requirements.txt
 	```
-3. Run the Streamlit app:
+3. Run the Flask app:
 	```
-	streamlit run home.py
+	python app.py
 	```
 4. Upload your fitness watch CSV file and explore the dashboard.
 
@@ -61,7 +61,7 @@ This project was developed as a collaborative team effort for the Infosys Spring
 
 ## Technologies Used
 - Python
-- Streamlit
+- Flask
 - Pandas, NumPy
 - Scikit-learn
 - Prophet
@@ -70,5 +70,5 @@ This project was developed as a collaborative team effort for the Infosys Spring
 
 
 ## Deployment
-The app is live at: [https://fitpulse-health-anomaly-detection.streamlit.app](https://fitpulse-health-anomaly-detection.streamlit.app)
+The app is deployed on Render and accessible at: [https://fitpulse-health-anomaly-detection.onrender.com](https://fitpulse-health-anomaly-detection.onrender.com)
 

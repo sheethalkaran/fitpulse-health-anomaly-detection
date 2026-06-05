@@ -59,7 +59,8 @@ def run_modeling(df_clean: pd.DataFrame):
         value_name="value"
     )
 
-    df_long["ts_id"] = df_long["Person_ID"].astype(str) + "_" + df_long["metric"]
+    # ts_id: PersonID___Metric (triple-underscore separator to avoid ambiguity)
+    df_long["ts_id"] = df_long["Person_ID"].astype(str) + "___" + df_long["metric"]
 
     # TSFresh
     features = extract_features(
@@ -71,8 +72,9 @@ def run_modeling(df_clean: pd.DataFrame):
     )
     impute(features)
 
-    features["Person_ID"] = features.index.str.split("_").str[0]
-    features["Metric"] = features.index.str.split("_").str[1]
+    # Split on first ___ to recover Person_ID and Metric correctly
+    features["Person_ID"] = features.index.str.split("___").str[0]
+    features["Metric"] = features.index.str.split("___").str[1]
     features_df = features.reset_index(drop=True)
 
     # Prophet forecasts
@@ -96,25 +98,48 @@ def run_modeling(df_clean: pd.DataFrame):
     # Clustering (DBSCAN + PCA)
     feature_numeric = features_df.select_dtypes(include=[np.number])
     clustering_df = pd.DataFrame()
+    clustering_skip_reason = None
 
-    if feature_numeric.shape[1] >= 2:
-        scaler = StandardScaler()
-        X = scaler.fit_transform(feature_numeric)
+    n_samples = feature_numeric.shape[0]
+    n_cols = feature_numeric.shape[1]
 
-        pca = PCA(n_components=2)
-        X_pca = pca.fit_transform(X)
+    if n_samples < 2:
+        clustering_skip_reason = "Need at least 2 time-series records (users × metrics) to run DBSCAN clustering."
+    elif n_cols < 2:
+        clustering_skip_reason = "Not enough feature columns to run PCA."
+    else:
+        try:
+            # Remove constant columns (StandardScaler fails on zero-variance)
+            feature_numeric = feature_numeric.loc[:, feature_numeric.std() > 0]
+            if feature_numeric.shape[1] < 2:
+                clustering_skip_reason = "All feature columns are constant — cannot run PCA."
+            else:
+                scaler = StandardScaler()
+                X = scaler.fit_transform(feature_numeric)
 
-        db = DBSCAN(eps=0.8, min_samples=2)
-        labels = db.fit_predict(X_pca)
+                # Safe n_components: cannot exceed min(samples, features)
+                n_components = min(2, n_samples, feature_numeric.shape[1])
+                pca = PCA(n_components=n_components)
+                X_pca = pca.fit_transform(X)
 
-        clustering_df = pd.DataFrame({
-            "pca1": X_pca[:, 0],
-            "pca2": X_pca[:, 1],
-            "cluster": labels
-        })
+                # Pad to 2 columns if only 1 component
+                if X_pca.shape[1] == 1:
+                    X_pca = np.hstack([X_pca, np.zeros((X_pca.shape[0], 1))])
+
+                db = DBSCAN(eps=0.8, min_samples=2)
+                labels = db.fit_predict(X_pca)
+
+                clustering_df = pd.DataFrame({
+                    "pca1": X_pca[:, 0],
+                    "pca2": X_pca[:, 1],
+                    "cluster": labels
+                })
+        except Exception as e:
+            clustering_skip_reason = f"Clustering error: {str(e)}"
 
     return {
         "features_df": features_df,
         "prophet_forecasts": prophet_forecasts,
         "clustering_df": clustering_df,
+        "clustering_skip_reason": clustering_skip_reason,
     }
