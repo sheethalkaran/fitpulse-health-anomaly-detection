@@ -70,5 +70,8 @@ This project was developed as a collaborative team effort for the Infosys Spring
 
 
 ## Deployment
-The app is deployed on Render and accessible at: [https://fitpulse-health-anomaly-detection.onrender.com](https://fitpulse-health-anomaly-detection.onrender.com)
+The app is deployed on Render and accessible at: [https://fitpulse-health-2czf.onrender.com](https://fitpulse-health-2czf.onrender.com)
+
+## Live Demo
+Try the interactive dashboard and upload sample fitness data to see anomaly detection in action.
 
