@@ -7,4 +7,4 @@ tsfresh
 flask
 gunicorn
 openpyxl
-reportlab
+reportlab==4.2.5
