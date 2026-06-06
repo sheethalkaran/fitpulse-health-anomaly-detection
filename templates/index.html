@@ -1187,7 +1187,7 @@
 
                 <div class="chart-content" style="display: none;">
                     <div class="brut-box" style="background-color: var(--color-cyan);">
-                        <h2 style="margin-bottom: 10px;">⬇️ Download Processed CSV Files</h2>
+                        <h2 style="margin-bottom: 10px;">Download Processed CSV Files</h2>
                         <p style="font-weight: 600; font-size: 0.95rem; margin-bottom: 15px;">
                             Download reports containing parsed signals, computed baselines, residuals, and anomaly labels.
                         </p>
@@ -1203,6 +1203,18 @@
                             </button>
                             <button class="brut-btn orange" onclick="downloadReport('steps')">
                                 <i class="fa-solid fa-shoe-prints"></i> Steps Anomalies Only
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="brut-box" style="background-color: var(--color-purple); margin-top: 24px;">
+                        <h2 style="margin-bottom: 10px;">Download Professional PDF Report</h2>
+                        <p style="font-weight: 600; font-size: 0.95rem; margin-bottom: 15px;">
+                            Generate and download a professional clinical diagnostic report in PDF format containing health metrics, AI recommendations, and anomaly timelines.
+                        </p>
+                        <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                            <button class="brut-btn" onclick="downloadPdfReport()" style="background-color: var(--color-yellow);">
+                                <i class="fa-solid fa-file-pdf"></i> Download PDF Summary Report
                             </button>
                         </div>
                     </div>
@@ -1709,7 +1721,7 @@
                 <span class="badge cyan">Age: ${bio.age}</span>
                 <span class="badge purple">Weight category: ${bio.weight}</span>
                 <span class="badge orange">Stress Rating: ${bio.stress}</span>
-                <span class="badge green">BP: ${bio.bp}</span>
+                <span class="badge pink" style="color: #000000;">BP: ${bio.bp}</span>
                 <span class="badge">Sleep Quality: ${bio.sleep_quality}/10</span>
             `;
 
@@ -1932,6 +1944,12 @@
         function downloadReport(type) {
             if (!appState.rawCsv) return;
             window.location.href = `/api/download_report?type=${type}&user=${encodeURIComponent(appState.selectedUser)}`;
+        }
+
+        // Download PDF report
+        function downloadPdfReport() {
+            if (!appState.rawCsv) return;
+            window.location.href = `/api/download_pdf_report?user=${encodeURIComponent(appState.selectedUser)}`;
         }
     </script>
 </body>

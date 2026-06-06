@@ -15,6 +15,7 @@ from module.module2_features_model import run_modeling
 from module.module3_anomaly_detection import detect_anomalies
 from utils.charts import line_with_anomalies
 import plotly.io as pio
+from utils.pdf_generator import generate_pdf_report
 
 app = Flask(__name__, template_folder='templates')
 
@@ -1244,6 +1245,109 @@ def download_report():
         as_attachment=True,
         download_name=filename
     )
+
+
+@app.route("/api/download_pdf_report", methods=["GET"])
+def download_pdf_report():
+    global ACTIVE_DF
+    if ACTIVE_DF is None or ACTIVE_DF.empty:
+        return "No active dataset", 400
+        
+    user_id = request.args.get("user", "All Users")
+    df = ACTIVE_DF.copy()
+
+    # Normalise timestamp column name to 'Timestamp'
+    if "timestamp" in df.columns and "Timestamp" not in df.columns:
+        df = df.rename(columns={"timestamp": "Timestamp"})
+
+    if user_id != "All Users" and "Person_ID" in df.columns:
+        df = df[df["Person_ID"].astype(str) == str(user_id)]
+        
+    if df.empty:
+        return f"No data found for user {user_id}", 400
+
+    # Calculate KPIs (exact same logic as get_dashboard)
+    avg_hr = round(df["Heart_Rate"].mean(), 1) if "Heart_Rate" in df.columns else 0.0
+    avg_sleep = round(df["Sleep_Duration"].mean(), 1) if "Sleep_Duration" in df.columns else 0.0
+    total_steps = int(df["Daily_Steps"].max()) if "Daily_Steps" in df.columns else 0
+    
+    if "Daily_Steps" in df.columns and "Timestamp" in df.columns:
+        df_c = df.copy()
+        df_c["Date"] = pd.to_datetime(df_c["Timestamp"]).dt.date
+        if user_id == "All Users" and "Person_ID" in df_c.columns:
+            total_steps = int(df_c.groupby(["Person_ID", "Date"])["Daily_Steps"].max().sum())
+        else:
+            total_steps = int(df_c.groupby("Date")["Daily_Steps"].max().sum())
+
+    hr_anoms = int(df["Heart_Rate_anomaly"].astype(int).sum()) if "Heart_Rate_anomaly" in df.columns else 0
+    sleep_anoms = int(df["Sleep_Duration_anomaly"].astype(int).sum()) if "Sleep_Duration_anomaly" in df.columns else 0
+    steps_anoms = int(df["Daily_Steps_anomaly"].astype(int).sum()) if "Daily_Steps_anomaly" in df.columns else 0
+    total_anoms = hr_anoms + sleep_anoms + steps_anoms
+
+    kpis = {
+        "avg_hr": avg_hr,
+        "avg_sleep": avg_sleep,
+        "total_steps": total_steps,
+        "total_anoms": total_anoms
+    }
+
+    # User details (from first row)
+    row0 = df.iloc[0]
+    user_details = {
+        "person_id": str(row0.get("Person_ID", "N/A")),
+        "age": int(row0.get("Age", 0)) if pd.notna(row0.get("Age")) else "N/A",
+        "weight": str(row0.get("Weight_Category", "N/A")),
+        "stress": str(row0.get("Stress_Level", "N/A")),
+        "bp": f"{int(row0.get('Systolic_Blood_Pressure', 120))}/{int(row0.get('Diastolic_Blood_Pressure', 80))}" if pd.notna(row0.get("Systolic_Blood_Pressure")) else "N/A",
+        "sleep_quality": str(row0.get("Quality_of_Sleep", "N/A"))
+    }
+
+    ai_insights = generate_ai_suggestions(df)
+
+    cond = False
+    if "Heart_Rate_anomaly" in df.columns:
+        cond = cond | (df["Heart_Rate_anomaly"].astype(int) == 1)
+    if "Daily_Steps_anomaly" in df.columns:
+        cond = cond | (df["Daily_Steps_anomaly"].astype(int) == 1)
+    if "Sleep_Duration_anomaly" in df.columns:
+        cond = cond | (df["Sleep_Duration_anomaly"].astype(int) == 1)
+
+    df_anom = df[cond].copy() if not isinstance(cond, bool) else pd.DataFrame()
+    anomalies_list = []
+    
+    if not df_anom.empty:
+        if "Timestamp" in df_anom.columns:
+            df_anom = df_anom.sort_values("Timestamp", ascending=False)
+        for _, row in df_anom.iterrows():
+            types = []
+            if "Heart_Rate_anomaly" in row and int(row["Heart_Rate_anomaly"]) == 1:
+                types.append("Heart Rate")
+            if "Daily_Steps_anomaly" in row and int(row["Daily_Steps_anomaly"]) == 1:
+                types.append("Steps")
+            if "Sleep_Duration_anomaly" in row and int(row["Sleep_Duration_anomaly"]) == 1:
+                types.append("Sleep")
+                
+            anomalies_list.append({
+                "timestamp": str(row.get("Timestamp", "N/A")),
+                "type": ", ".join(types),
+                "hr": row.get("Heart_Rate", "N/A"),
+                "sleep": row.get("Sleep_Duration", "N/A"),
+                "steps": row.get("Daily_Steps", "N/A")
+            })
+
+    try:
+        pdf_path = generate_pdf_report(user_id, user_details, kpis, ai_insights, anomalies_list)
+        filename = f"fitpulse_report_{user_id}.pdf"
+        return send_file(
+            pdf_path,
+            mimetype="application/pdf",
+            as_attachment=True,
+            download_name=filename
+        )
+    except Exception as e:
+        traceback.print_exc()
+        return f"Failed to generate PDF report: {str(e)}", 500
+
 
 if __name__ == "__main__":
     # Standard Flask dev server for local Windows testing
