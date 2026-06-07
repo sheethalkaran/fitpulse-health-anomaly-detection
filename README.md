@@ -2,7 +2,7 @@
 FitPulse is a health analytics platform that utilizes advanced anomaly detection techniques to analyze fitness watch data, enabling users and healthcare providers to proactively monitor health metrics and identify early warning signs of irregular heart rate, sleep disturbances, and abnormal activity levels.
 
 ## Project Statement
-With the surge in wearable fitness devices, vast amounts of health-related time-series data are generated daily. FitPulse leverages advanced anomaly detection techniques to intelligently analyze this data, flagging unusual health patterns and supporting preventive healthcare and personalized wellness insights.
+With the surge in wearable fitness devices, vast amounts of health-related time-series data are generated daily. FitPulse leverages advanced anomaly detection techniques to intelligently analyze data, flagging unusual health patterns and supporting preventive healthcare and personalized wellness insights.
 
 ## Features
 - Upload fitness watch data (CSV format)
