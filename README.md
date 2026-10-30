@@ -39,24 +39,6 @@ With the surge in wearable fitness devices, vast amounts of health-related time-
 ### Dataset
 The dataset provided in the `data/` folder is sample fitness watch data used for demonstration purposes.
 
-## Team Contributions
-This project was developed as a collaborative team effort for the Infosys Springboard Internship.
-
-- Vinotha M  
-  Module 1: Data Collection and Preprocessing
-
-- Prajwal Venkatesh Sortur  
-  Module 2: Feature Extraction and Modeling
-
-- Sheethal Karan  
-  Module 3: Anomaly Detection and Visualization
-
-- Chinmoy Saikia  
-  Module 4: Dashboard Development and Insights
-
-- Mahek Sultana  
-  Project support and presentation assistance
-
 ## Technologies Used
 - Python
 - Flask
